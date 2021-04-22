@@ -113,30 +113,39 @@ end
 
 --led用于控制电源不断电
 local led1 = pins.setup(pio.P0_10,0)
+local ledxh =pins.setup(pio.P0_11, 0)
 local led2 = pins.setup(pio.P0_17,0)
 function changeLED()
     while true do
-        led1(0)
+        if misc.getVbatt() < 3550  then
+
+            led1(1)
         --led2(0)
-        sys.wait(400)
-        log.info("led --0")
-        led1(1)
+            sys.wait(500)
+        --log.info("led --0")
+            led1(0)
         --led2(0)
-        sys.wait(2000)
-        log.info("led --1")
+            sys.wait(500)
+            log.info("ledmeidian-------meidian-------meidian---------")
+        end
+        sys.wait(500)
     end
 
 end
 function changeLED2()
     while true do
-        led2(0)
+        if net.getRssi() < 15  then
+
+            ledxh(1)
         --led2(0)
-        sys.wait(500)
-        log.info("led --0")
-        led2(1)
+            sys.wait(500)
+        --log.info("led --0")
+            ledxh(0)
         --led2(0)
+            sys.wait(500)
+            log.info("xinhao-------xinhao-------xinhaoruoruoruoruoruorurourouroruoru---------")
+        end
         sys.wait(500)
-        log.info("led --1")
     end
 
 end
@@ -154,6 +163,7 @@ local function connected(num)
     audio.setMicGain("call",tonumber(mic))
     --通话中音量测试
     audio.setVolume(tonumber(speaker))
+    audio.setCallVolume(7)
     --通话中向对方播放TTS测试
     --audio.play(7,"TTS","通话中TTS测试",7,nil,true,2000)
     --110秒之后主动结束通话
@@ -228,8 +238,9 @@ local function incoming(num)
 
                 while true do
                     print("有人来电话了，")
-                    audio.play(1,"TTS","来电话啦",tonumber(speaker),function() sys.publish("PLAY_INCOMING_RING_IND") end,true)
+                    --audio.play(1,"TTS","来电话啦",tonumber(speaker),function() sys.publish("PLAY_INCOMING_RING_IND") end,true)
                     --audio.play(1,"FILE","/lua/call.mp3",4,function() sys.publish("PLAY_INCOMING_RING_IND") end,true)
+                    audio.play(1,"FILE","/lua/call.mp3",tonumber(speaker),function() sys.publish("PLAY_INCOMING_RING_IND") end,true)
                     sys.waitUntil("PLAY_INCOMING_RING_IND")
                     break
                 end
@@ -317,7 +328,7 @@ local function keyMsg(msg)
                 print("拨打中3 ----------------------------")
                 cc.dial(baimingdan[3])
             end
-
+            audio.setCallVolume(7)
             dangQianZhuangTai=2
 
         else
@@ -375,12 +386,19 @@ function printconfig()
         for k, v in pairs(baimingdan) do
             print(k, v)
         end
-
+        led2(1)
+        --led2(0)
+        sys.wait(500)
+        --log.info("led --0")
+        led2(0)
+        --led2(0)
+            --sys.wait(500)
         log.info("----------------------------------------------------", "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
         log.info("----------------------------------------------------", "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
         log.info("----------------------------------------------------", "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
 
         sys.wait(6000)
+        print( misc.getVbatt())
 
     end
 
