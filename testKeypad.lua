@@ -29,7 +29,9 @@ baimingdan=nvm.get("baimingdanPara")
 
 --来电铃声播放协程ID
 local coIncoming
-dangQianZhuangTai=0;--0： 待机   1：拨号中或者待接听  2：通话中
+dangQianZhuangTai=0--0： 待机   1：拨号中或者待接听  2：通话中
+
+delaytime=6000
 --用于截取字符串
 function Split(szFullString, szSeparator)
 	local nFindStartIndex = 1
@@ -180,6 +182,7 @@ local function disconnected()
     audio.stop()
     dangQianZhuangTai=0
     diyicilaidian=true
+    delaytime=6000
 end
 
 --检查是否在白名单内
@@ -202,6 +205,7 @@ end
 -- @return 无
 local function incoming(num)
     log.info("testCall.incoming:"..num)
+    delaytime=400
 
     if diyicilaidian then
         dangQianZhuangTai=1
@@ -330,6 +334,7 @@ local function keyMsg(msg)
             end
             audio.setCallVolume(7)
             dangQianZhuangTai=2
+            delaytime=400
 
         else
             if dangQianZhuangTai==2 then
@@ -397,7 +402,7 @@ function printconfig()
         log.info("----------------------------------------------------", "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
         log.info("----------------------------------------------------", "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
 
-        sys.wait(6000)
+        sys.wait(delaytime)
         print( misc.getVbatt())
 
     end
